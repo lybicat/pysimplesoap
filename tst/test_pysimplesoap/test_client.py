@@ -30,7 +30,6 @@ class TestSimpleXmlElement(BaseTestcase):
         resp = response('Body', ns=ns).children().unmarshall(output, strict=True)
         self.assertEqual(resp['startRegistrationResponse']['agentIdentity']['type'], 'BTS')
 
-
 class TestGenerateClientRequest(BaseTestcase):
     def test_generate_normal_xml_request(self):
         self.assertEqual(client._generate_request('startRegistration', (), {}, []), ({}, '''<?xml version="1.0" encoding="UTF-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
