@@ -529,6 +529,7 @@ short = Alias(int, 'short')
 double = Alias(float, 'double')
 integer = Alias(long, 'integer')
 positiveInteger = Alias(long, 'positiveInteger')
+nonNegativeInteger = Alias(long, 'nonNegativeInteger'),
 DateTime = datetime.datetime
 Date = datetime.date
 Time = datetime.time
@@ -545,6 +546,7 @@ TYPE_MAP = {
     long: 'long',
     integer: 'integer',
     positiveInteger: 'positiveInteger',
+    nonNegativeInteger: 'nonNegativeInteger',
     float: 'float',
     double: 'double',
     Decimal: 'decimal',
