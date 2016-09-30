@@ -98,7 +98,7 @@ class _SoapMsgParser(object):
     def _parse_one_mime(self, mime):
         cid_start = mime.find('Content-ID:') + len('Content-ID:')
         cid_end = mime.find('\r\n', cid_start)
-        cid = mime[cid_start:cid_end].strip('< >')
+        cid = 'cid:' + mime[cid_start:cid_end].strip('< >')
         content = mime[mime.find('\r\n\r\n', cid_end):].strip()
 
         try:
