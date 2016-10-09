@@ -29,9 +29,9 @@ class TestMsgDecoding(BaseTestcase):
         self.assertEqual(resp['queueId'], 'ne3s_atl_logUploadNotificationQueue')
         self.assertEqual(resp['sequenceNumber'], 11),
         self.assertEqual(resp['attachmentProperties']['contentType'], 'ofas')
-        self.assertIn('transferNotificationContent1466676077553@nokiasiemens.com', resp)
+        self.assertIn('cid:transferNotificationContent1466676077553@nokiasiemens.com', resp)
         self.assertNotIn('', resp)
-        attachment = resp['transferNotificationContent1466676077553@nokiasiemens.com']
+        attachment = resp['cid:transferNotificationContent1466676077553@nokiasiemens.com']
         self.assertEqual(attachment['notification']['alarmNew']['alarmId'], '1')
         self.assertEqual(attachment['notification']['alarmNew']['alarmText'], 'Simple alarm text')
 

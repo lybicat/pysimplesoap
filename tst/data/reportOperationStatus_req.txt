@@ -1,0 +1,15 @@
+--MIMEBoundary_a33628f952113627189ce7fb3be101170181698d5b86d135
+Content-Type: text/xml; charset=UTF-8
+Content-Transfer-Encoding: binary
+Content-ID: <0.933628f952113627189ce7fb3be101170181698d5b86d135@apache.org>
+
+<?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Header xmlns:wsa="http://www.w3.org/2005/08/addressing"><wsa:To>http://127.0.0.1:30505/services/NE3SOperationNotificationService</wsa:To><wsa:MessageID>urn:uuid:3e3b7ecf-0776-46b7-8681-b8e02003f70e</wsa:MessageID><wsa:Action>http://www.nokiasiemens.com/ne3s/1.0/reportOperationStatus</wsa:Action></soapenv:Header><soapenv:Body><ns2:reportOperationStatus xmlns:ns2="http://www.nokiasiemens.com/ne3s/1.0"><ns2:agentRegistrationId>MRBTS-1</ns2:agentRegistrationId><ns2:agentRegistrationKey>MTA1MTIxMDQ0</ns2:agentRegistrationKey><ns2:operationId>2</ns2:operationId><ns2:completed>false</ns2:completed><ns2:pageSequenceNumber>1</ns2:pageSequenceNumber><ns2:attachmentProperties><ns2:compression>none</ns2:compression><ns2:contentType>ofas</ns2:contentType><ns2:checksum><ns2:algorithm>none</ns2:algorithm><ns2:hash>hash</ns2:hash></ns2:checksum></ns2:attachmentProperties><ns2:operationStatusContent>cid:reportOperationStatusContent1475996176383@nokiasiemens.com</ns2:operationStatusContent></ns2:reportOperationStatus></soapenv:Body></soapenv:Envelope>
+--MIMEBoundary_a33628f952113627189ce7fb3be101170181698d5b86d135
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: binary
+Content-ID: <reportOperationStatusContent1475996176383@nokiasiemens.com>
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<alarmSynchronisation/>
+
+--MIMEBoundary_a33628f952113627189ce7fb3be101170181698d5b86d135--

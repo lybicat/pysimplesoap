@@ -137,9 +137,7 @@ class SoapDispatcher(object):
         soap_fault_code = 'VersionMismatch'
         name = None
 
-        # namespaces = [('model', 'http://model.common.mt.moboperator'), ('external', 'http://external.mt.moboperator')]
         _ns_reversed = dict(((v, k) for k, v in self.namespaces.items()))  # Switch keys-values
-        # _ns_reversed = {'http://external.mt.moboperator': 'external', 'http://model.common.mt.moboperator': 'model'}
 
         try:
             request = SimpleXMLElement(xml, namespace=self.namespace, headers=headers)
@@ -176,7 +174,7 @@ class SoapDispatcher(object):
             if not action or not name:
                 # method name = input message name
                 name = method.get_local_name()
-                prefix = method.get_prefix()
+                prefix = self.prefix or method.get_prefix()
 
             log.debug('dispatch method: %s', name)
             function, returns_types, args_types, doc = self.methods[name]
@@ -253,7 +251,7 @@ class SoapDispatcher(object):
             body.marshall("%s:Fault" % soap_ns, fault, ns=False)
         else:
             # return normal value
-            res = body.add_child(self.response_element_name(name), ns=self.namespace)
+            res = body.add_child(self.response_element_name(name))
             if not prefix:
                 res['xmlns'] = self.namespace  # add target namespace
 
@@ -269,16 +267,17 @@ class SoapDispatcher(object):
                                      "%s vs %s" % (str(returns_types), str(ret)))
                 if not complex_type or not types_ok:
                     # backward compatibility for scalar and simple types
-                    res.marshall(list(returns_types.keys())[0], ret, )
+                    res.marshall(prefix+':'+list(returns_types.keys())[0], ret)
                 else:
                     # new style for complex classes
                     for k, v in ret.items():
-                        res.marshall(k, v)
+                        res.marshall(prefix+':'+k, v)
             elif returns_types is None:
                 # merge xmlelement returned
                 res.import_node(ret)
             elif returns_types == {}:
                 log.warning('Given returns_types is an empty dict.')
+
 
         return response.as_xml(pretty=self.pretty)
 
