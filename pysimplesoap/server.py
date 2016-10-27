@@ -160,34 +160,6 @@ class SoapDispatcher(object):
             if v in self.namespaces.values():
                 _ns_reversed[v] = k
 
-        # parse request message and get local method
-        method = request('Body', ns=soap_uri).children()(0)
-        if action:
-            # method name = action
-            name = action[len(self.action)+1:-1]
-            prefix = self.prefix
-        if not action or not name:
-            # method name = input message name
-            name = method.get_local_name()
-            prefix = self.prefix or method.get_prefix()
-
-        log.debug('dispatch method: %s', name)
-        function, returns_types, args_types, doc = self.methods[name]
-        log.debug('returns_types %s', returns_types)
-
-        # de-serialize parameters (if type definitions given)
-        if args_types:
-            args = method.children().unmarshall(args_types)
-        elif args_types is None:
-            args = {'request': method}  # send raw request
-        else:
-            args = {}  # no parameters
-
-        # execute function
-        ret = function(**args)
-        log.debug('dispathed method returns: %s', ret)
-
-
         # build response message
         if not prefix:
             xml = """<%(soap_ns)s:Envelope xmlns:%(soap_ns)s="%(soap_uri)s"/>"""
@@ -225,6 +197,34 @@ class SoapDispatcher(object):
             # generate a Soap Fault (with the python exception)
             body.marshall("%s:Fault" % soap_ns, fault, ns=False)
         else:
+            # parse request message and get local method
+            method = request('Body', ns=soap_uri).children()(0)
+            if action:
+                # method name = action
+                name = action[len(self.action)+1:-1]
+                prefix = self.prefix
+            if not action or not name:
+                # method name = input message name
+                name = method.get_local_name()
+                prefix = self.prefix or method.get_prefix()
+
+            log.debug('dispatch method: %s', name)
+            function, returns_types, args_types, doc = self.methods[name]
+            log.debug('returns_types %s', returns_types)
+
+            # de-serialize parameters (if type definitions given)
+            if args_types:
+                args = method.children().unmarshall(args_types)
+            elif args_types is None:
+                args = {'request': method}  # send raw request
+            else:
+                args = {}  # no parameters
+
+            # execute function
+            ret = function(**args)
+            log.debug('dispathed method returns: %s', ret)
+
+
             # return normal value
             res = body.add_child(self.response_element_name(name))
             if not prefix:
