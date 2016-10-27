@@ -24,7 +24,6 @@ import sys
 import logging
 import warnings
 import re
-import traceback
 try:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 except ImportError:
@@ -199,19 +198,6 @@ class SoapDispatcher(object):
                 'faultstring': e.faultstring,
                 'detail': e.detail
             })
-
-        except Exception:  # This shouldn't be one huge try/except
-            import sys
-            etype, evalue, etb = sys.exc_info()
-            log.error(traceback.format_exc())
-            if self.debug:
-                detail = u''.join(traceback.format_exception(etype, evalue, etb))
-                detail += u'\n\nXML REQUEST\n\n' + xml.decode('UTF-8')
-            else:
-                detail = None
-            fault.update({'faultcode': "%s.%s" % (soap_fault_code, etype.__name__),
-                     'faultstring': evalue,
-                     'detail': detail})
 
         # build response message
         if not prefix:
