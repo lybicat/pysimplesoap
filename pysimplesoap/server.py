@@ -133,71 +133,60 @@ class SoapDispatcher(object):
         if fault is None:
             fault = {}
         soap_ns, soap_uri = self.soap_ns, self.soap_uri
-        soap_fault_code = 'VersionMismatch'
         name = None
 
         _ns_reversed = dict(((v, k) for k, v in self.namespaces.items()))  # Switch keys-values
 
-        try:
-            request = SimpleXMLElement(xml, namespace=self.namespace, headers=headers)
+        request = SimpleXMLElement(xml, namespace=self.namespace, headers=headers)
 
-            # detect soap prefix and uri (xmlns attributes of Envelope)
-            for k, v in request[:]:
-                if v in ("http://schemas.xmlsoap.org/soap/envelope/",
-                         "http://www.w3.org/2003/05/soap-env",
-                         "http://www.w3.org/2003/05/soap-envelope",):
-                    soap_ns = request.attributes()[k].localName
-                    soap_uri = request.attributes()[k].value
+        # detect soap prefix and uri (xmlns attributes of Envelope)
+        for k, v in request[:]:
+            if v in ("http://schemas.xmlsoap.org/soap/envelope/",
+                     "http://www.w3.org/2003/05/soap-env",
+                     "http://www.w3.org/2003/05/soap-envelope",):
+                soap_ns = request.attributes()[k].localName
+                soap_uri = request.attributes()[k].value
 
-                # If the value from attributes on Envelope is in additional namespaces
-                elif v in self.namespaces.values():
-                    _ns = request.attributes()[k].localName
-                    _uri = request.attributes()[k].value
-                    _ns_reversed[_uri] = _ns  # update with received alias
-                    # Now we change 'external' and 'model' to the received forms i.e. 'ext' and 'mod'
-                # After that we know how the client has prefixed additional namespaces
+            # If the value from attributes on Envelope is in additional namespaces
+            elif v in self.namespaces.values():
+                _ns = request.attributes()[k].localName
+                _uri = request.attributes()[k].value
+                _ns_reversed[_uri] = _ns  # update with received alias
+                # Now we change 'external' and 'model' to the received forms i.e. 'ext' and 'mod'
+            # After that we know how the client has prefixed additional namespaces
 
-            ns = NS_RX.findall(xml)
-            for k, v in ns:
-                if v in self.namespaces.values():
-                    _ns_reversed[v] = k
+        ns = NS_RX.findall(xml)
+        for k, v in ns:
+            if v in self.namespaces.values():
+                _ns_reversed[v] = k
 
-            soap_fault_code = 'Client'
+        # parse request message and get local method
+        method = request('Body', ns=soap_uri).children()(0)
+        if action:
+            # method name = action
+            name = action[len(self.action)+1:-1]
+            prefix = self.prefix
+        if not action or not name:
+            # method name = input message name
+            name = method.get_local_name()
+            prefix = self.prefix or method.get_prefix()
 
-            # parse request message and get local method
-            method = request('Body', ns=soap_uri).children()(0)
-            if action:
-                # method name = action
-                name = action[len(self.action)+1:-1]
-                prefix = self.prefix
-            if not action or not name:
-                # method name = input message name
-                name = method.get_local_name()
-                prefix = self.prefix or method.get_prefix()
+        log.debug('dispatch method: %s', name)
+        function, returns_types, args_types, doc = self.methods[name]
+        log.debug('returns_types %s', returns_types)
 
-            log.debug('dispatch method: %s', name)
-            function, returns_types, args_types, doc = self.methods[name]
-            log.debug('returns_types %s', returns_types)
+        # de-serialize parameters (if type definitions given)
+        if args_types:
+            args = method.children().unmarshall(args_types)
+        elif args_types is None:
+            args = {'request': method}  # send raw request
+        else:
+            args = {}  # no parameters
 
-            # de-serialize parameters (if type definitions given)
-            if args_types:
-                args = method.children().unmarshall(args_types)
-            elif args_types is None:
-                args = {'request': method}  # send raw request
-            else:
-                args = {}  # no parameters
+        # execute function
+        ret = function(**args)
+        log.debug('dispathed method returns: %s', ret)
 
-            soap_fault_code = 'Server'
-            # execute function
-            ret = function(**args)
-            log.debug('dispathed method returns: %s', ret)
-
-        except SoapFault as e:
-            fault.update({
-                'faultcode': "%s.%s" % (soap_fault_code, e.faultcode),
-                'faultstring': e.faultstring,
-                'detail': e.detail
-            })
 
         # build response message
         if not prefix:
