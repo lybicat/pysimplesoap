@@ -102,9 +102,6 @@ def process_element(elements, element_name, node, element_type, xsd_uri,
                     soapenc_uri='http://schemas.xmlsoap.org/soap/encoding/',
                     struct=None):
     """Parse and define simple element types as Struct objects"""
-
-    log.debug('Processing element %s %s' % (element_name, element_type))
-
     # iterate over inner tags of the element definition:
     for tag in node:
 
@@ -406,7 +403,6 @@ def preprocess_schema(schema, imported_schemas, elements, xsd_uri, dialect,
             namespace = local_namespaces[None]          # get targetNamespace
             # element_ns = global_namespaces[ns]          # get the prefix
             element_name = element['name']
-            log.debug("Parsing Element %s: %s" % (element_type, element_name))
             if element.get_local_name() == 'complexType':
                 children = element.children()
             elif element.get_local_name() == 'simpleType':
