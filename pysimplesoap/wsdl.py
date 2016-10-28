@@ -85,7 +85,6 @@ def _merge_imported_wsdl(wsdl, wsdl_basedir):
                 logger.warning('WSDL %s already imported!' % wsdl_location)
                 continue
             imported_wsdls[wsdl_location] = wsdl_namespace
-            logger.debug('Importing wsdl %s from %s' % (wsdl_namespace, wsdl_location))
             # Open uri and read xml:
             xml = fetch(wsdl_location, wsdl_basedir)
             # Parse imported XML schema (recursively):
