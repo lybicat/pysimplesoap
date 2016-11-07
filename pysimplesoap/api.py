@@ -65,7 +65,7 @@ class _SoapMsgParser(object):
         operation = self._get_operation(method)
         if response("Fault", ns=SOAP_NAMESPACES.values(), error=False):
             self._raise_fault(response, operation)
-        input_output = operation['input']
+        input_output = operation['input'].copy()
         input_output.update(operation['output'])
         resp = response('Body', ns=self.namespace) \
                 .children() \
