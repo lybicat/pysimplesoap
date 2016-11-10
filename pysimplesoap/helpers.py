@@ -49,10 +49,11 @@ def fetch(url, wsdl_basedir=''):
             try:
                 path = os.path.normpath(os.path.join(wsdl_basedir, url))
                 tmp_url = "%s://%s" % (scheme, path)
-                log.debug('Scheme not found, trying %s' % scheme)
+                #log.debug('Scheme not found, trying %s' % scheme)
                 return fetch(tmp_url, wsdl_basedir)
             except Exception as e:
-                log.error(e)
+                #log.error(e)
+                pass
         raise RuntimeError('No scheme given for url: %s' % url)
 
     # make md5 hash of the url for caching...
@@ -109,14 +110,14 @@ def process_element(elements, element_name, node, element_type, xsd_uri,
         if tag.get_local_name() in ('annotation', 'documentation'):
             continue
         elif tag.get_local_name() in ('element', 'restriction', 'list'):
-            log.debug('%s has no children! %s' % (element_name, tag))
+            #log.debug('%s has no children! %s' % (element_name, tag))
             children = tag  # element "alias"?
             alias = True
         elif tag.children():
             children = tag.children()
             alias = False
         else:
-            log.debug('%s has no children! %s' % (element_name, tag))
+            #log.debug('%s has no children! %s' % (element_name, tag))
             continue  # TODO: abstract?
 
         # check if extending a previous processed element ("extension"):
@@ -250,7 +251,7 @@ def process_element(elements, element_name, node, element_type, xsd_uri,
                 struct.references[e_name] = e['ref']
                 struct.namespaces[e_name] = namespace  # set the element namespace
             else:
-                log.debug('complexContent/simpleType/element %s = %s' % (element_name, type_name))
+                #log.debug('complexContent/simpleType/element %s = %s' % (element_name, type_name))
                 # use None to point this is a complex element reference
                 struct.refers_to = fn
             if e is not None and e.get_local_name() == 'extension' and e.children():
@@ -335,7 +336,8 @@ def get_message(messages, message_name, part_name, parameter_order=None):
             for part_name_key in parameter_order:
                 part = parts.get(part_name_key)
                 if not part:
-                    log.error('Part %s not found for %s' % (part_name_key, message_name))
+                    #log.error('Part %s not found for %s' % (part_name_key, message_name))
+                    pass
                 elif not new_msg:
                     new_msg = part.copy()
                 else:
@@ -379,13 +381,13 @@ def preprocess_schema(schema, imported_schemas, elements, xsd_uri, dialect,
             schema_namespace = element['namespace']
             schema_location = element['schemaLocation']
             if schema_location is None:
-                log.debug('Schema location not provided for %s!' % schema_namespace)
+                #log.debug('Schema location not provided for %s!' % schema_namespace)
                 continue
             if schema_location in imported_schemas:
-                log.debug('Schema %s already imported!' % schema_location)
+                #log.debug('Schema %s already imported!' % schema_location)
                 continue
             imported_schemas[schema_location] = schema_namespace
-            log.debug('Importing schema %s from %s' % (schema_namespace, schema_location))
+            #log.debug('Importing schema %s from %s' % (schema_namespace, schema_location))
             # Open uri and read xml:
             xml = fetch(schema_location, wsdl_basedir)
 
