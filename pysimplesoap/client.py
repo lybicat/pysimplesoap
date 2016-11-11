@@ -19,7 +19,6 @@ if sys.version > '3':
 
 import logging
 import os
-import tempfile
 import requests
 
 from .simplexml import SimpleXMLElement
@@ -38,7 +37,7 @@ class SoapClient(object):
     """Simple SOAP Client (simil PHP)"""
     def __init__(self, location=None, action=None, namespace='',
                  cert=None, proxy=None, ns=None,
-                 soap_ns=None, wsdl=None, wsdl_basedir='', cacert=None,
+                 soap_ns=None, wsdl=None, wsdl_basedir='', ca_certs=None,
                  sessions=False, soap_server=None, timeout=TIMEOUT,
                  http_headers=None, username=None, password=None,
                  key_file=None, **kwds):
@@ -71,19 +70,12 @@ class SoapClient(object):
         self.__headers = {}         # general headers
         self.__call_headers = None  # Struct to be marshalled for RPC Call
 
-        # check if the Certification Authority Cert is a string and store it
-        if cacert and cacert.startswith('-----BEGIN CERTIFICATE-----'):
-            fd, filename = tempfile.mkstemp()
-            log.debug("Saving CA certificate to %s" % filename)
-            with os.fdopen(fd, 'w+b', -1) as f:
-                f.write(cacert)
-            cacert = filename
-        self.cacert = cacert
-
         # Create HTTP wrapper
         self.http = requests.session()
         if username and password:
             self.http.auth = (username, password)
+        if ca_certs:
+            self.http.verify = ca_certs
         if cert and key_file:
             self.http.cert = (key_file, cert)
 
@@ -423,9 +415,6 @@ class SoapClient(object):
     def close(self):
         """Finish the connection and remove temp files"""
         self.http.close()
-        if self.cacert.startswith(tempfile.gettempdir()):
-            log.debug('removing %s' % self.cacert)
-            os.unlink(self.cacert)
 
     def __repr__(self):
         s = 'SOAP CLIENT'
