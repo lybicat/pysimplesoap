@@ -44,6 +44,10 @@ def fetch(url, wsdl_basedir=''):
     """Download a document from a URL, save it locally if cache enabled"""
 
     # check / append a valid schema if not given:
+    if os.name == 'nt':
+        path = os.path.normpath(os.path.join(wsdl_basedir, url))
+        with open(path, 'rb') as f:
+            return f.read()
     if url[:4] not in ('http', 'file'):
         for scheme in ('file', 'http', 'https'):
             try:
