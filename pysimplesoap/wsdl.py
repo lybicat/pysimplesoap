@@ -41,8 +41,10 @@ def parse(wsdl_path, wsdl_basedir=''):
     # TODO: extract "fetch_wsdl" function
     # Open uri and read xml:
     if isinstance(wsdl_path, (str, unicode)): # raw string
-        _, netloc, path, _, _ = urlsplit(wsdl_path)
+        disk, netloc, path, _, _ = urlsplit(wsdl_path)
         wsdl_basedir = os.path.dirname(netloc + path)
+        if os.name == 'nt':
+            wsdl_basedir = disk + ":" + wsdl_basedir
         xml = fetch(wsdl_path, wsdl_basedir)
     else: # file object or stringio
         xml = wsdl_path.read()
