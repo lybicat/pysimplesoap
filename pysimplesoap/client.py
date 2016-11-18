@@ -105,6 +105,8 @@ class SoapClient(object):
 
     def __getattr__(self, attr):
         """Return a pseudo-method that can be called"""
+        if attr.startswith('_'):
+            raise AttributeError
         if self.services: # using WSDL:
             return lambda *args, **kwargs: self.wsdl_call(attr, *args, **kwargs)
         else: # not using WSDL?
