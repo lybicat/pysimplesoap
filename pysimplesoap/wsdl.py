@@ -34,7 +34,7 @@ def cache(func):
 
 @cache
 def parse(wsdl_path, wsdl_basedir=''):
-    logger.debug('Parsing wsdl path: %s' % wsdl_path)
+    #logger.debug('Parsing wsdl path: %s' % wsdl_path)
     # always return an unicode object:
     REVERSE_TYPE_MAP['string'] = str
 
@@ -81,10 +81,10 @@ def _merge_imported_wsdl(wsdl, wsdl_basedir):
             wsdl_namespace = element['namespace']
             wsdl_location = element['location']
             if wsdl_location is None:
-                logger.warning('WSDL location not provided for %s!' % wsdl_namespace)
+                #logger.warning('WSDL location not provided for %s!' % wsdl_namespace)
                 continue
             if wsdl_location in imported_wsdls:
-                logger.warning('WSDL %s already imported!' % wsdl_location)
+                #logger.warning('WSDL %s already imported!' % wsdl_location)
                 continue
             imported_wsdls[wsdl_location] = wsdl_namespace
             # Open uri and read xml:

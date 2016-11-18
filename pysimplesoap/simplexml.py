@@ -53,7 +53,7 @@ class SimpleXMLElement(object):
             try:
                 self.__document = minidom.parseString(self._get_raw_xml(content_type, text))
             except:
-                log.error(text)
+                #log.error(text)
                 raise
             self.__elements = [self.__document.documentElement]
         else:
@@ -478,7 +478,8 @@ class SimpleXMLElement(object):
             try:
                 name = name.replace(pref, self.__namespaces_map[pref])
             except KeyError:
-                log.warning('Unknown namespace alias %s' % name)
+                #log.warning('Unknown namespace alias %s' % name)
+                pass
         return name
 
     def marshall(self, name, value, add_child=True, add_comments=False,

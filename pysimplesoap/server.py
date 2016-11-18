@@ -208,9 +208,9 @@ class SoapDispatcher(object):
                 name = method.get_local_name()
                 prefix = self.prefix or method.get_prefix()
 
-            log.debug('dispatch method: %s', name)
+            #log.debug('dispatch method: %s', name)
             function, returns_types, args_types, doc = self.methods[name]
-            log.debug('returns_types %s', returns_types)
+            #log.debug('returns_types %s', returns_types)
 
             # de-serialize parameters (if type definitions given)
             if args_types:
@@ -222,7 +222,7 @@ class SoapDispatcher(object):
 
             # execute function
             ret = function(**args)
-            log.debug('dispathed method returns: %s', ret)
+            #log.debug('dispathed method returns: %s', ret)
 
 
             # return normal value
@@ -251,7 +251,8 @@ class SoapDispatcher(object):
                 # merge xmlelement returned
                 res.import_node(ret)
             elif returns_types == {}:
-                log.warning('Given returns_types is an empty dict.')
+                #log.warning('Given returns_types is an empty dict.')
+                pass
 
 
         return response.as_xml(pretty=self.pretty)
@@ -455,7 +456,7 @@ class SOAPHandler(BaseHTTPRequestHandler):
             headers={'content-type': self.headers.get('content-type')})
         # check if fault dict was completed (faultcode, faultstring, detail)
         if fault:
-            log.error(fault)
+            #log.error(fault)
             self.send_response(500)
         else:
             self.send_response(200)
@@ -555,13 +556,13 @@ if __name__ == "__main__":
             request, response, doc = dispatcher.help(method)
 
     if '--serve' in sys.argv:
-        log.info("Starting server...")
+        #log.info("Starting server...")
         httpd = HTTPServer(("", 8008), SOAPHandler)
         httpd.dispatcher = dispatcher
         httpd.serve_forever()
 
     if '--wsgi-serve' in sys.argv:
-        log.info("Starting wsgi server...")
+        #log.info("Starting wsgi server...")
         from wsgiref.simple_server import make_server
         application = WSGISOAPHandler(dispatcher)
         wsgid = make_server('', 8008, application)
@@ -581,8 +582,8 @@ if __name__ == "__main__":
         c = [{'d': '1.20'}, {'d': '2.01'}]
         response = client.Adder(p=p, dt='2010-07-24', c=c)
         result = response.AddResult
-        log.info(int(result.ab))
-        log.info(str(result.dd))
+        #log.info(int(result.ab))
+        #log.info(str(result.dd))
 
     if '--consume-wsdl' in sys.argv:
         from .client import SoapClient
@@ -594,6 +595,6 @@ if __name__ == "__main__":
         dt = datetime.date.today()
         response = client.Adder(p=p, dt=dt, c=c)
         result = response['AddResult']
-        log.info(int(result['ab']))
-        log.info(str(result['dd']))
+        #log.info(int(result['ab']))
+        #log.info(str(result['dd']))
 

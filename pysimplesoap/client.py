@@ -99,7 +99,7 @@ class SoapClient(object):
 <%(soap_ns)s:Body><%(ns)s:%(method)s></%(ns)s:%(method)s></%(soap_ns)s:Body></%(soap_ns)s:Envelope>"""
 
         # parse wsdl url
-        log.debug('wsdl: %s' % wsdl)
+        #log.debug('wsdl: %s' % wsdl)
         self.services = wsdl and self.wsdl_parse(wsdl, self.wsdl_basedir)
         self.service_port = None                 # service port for late binding
 
@@ -205,9 +205,9 @@ class SoapClient(object):
             headers['SOAPAction'] = soap_action
 
         headers.update(self.http_headers)
-        log.info("POST %s" % self.location)
-        log.debug('\n'.join(["%s: %s" % (k, v) for k, v in headers.iteritems()]))
-        log.debug(xml)
+        #log.info("POST %s" % self.location)
+        #log.debug('\n'.join(["%s: %s" % (k, v) for k, v in headers.iteritems()]))
+        #log.debug(xml)
 
         if sys.version < '3':
             # Ensure http_method, location and all headers are binary to prevent
@@ -218,8 +218,8 @@ class SoapClient(object):
 
         resp = self.http.post(self.location, data=xml, headers=headers)
 
-        log.debug('\n'.join(["%s: %s" % (k, v) for k, v in resp.headers.iteritems()]))
-        log.debug(resp.content)
+        #log.debug('\n'.join(["%s: %s" % (k, v) for k, v in resp.headers.iteritems()]))
+        #log.debug(resp.content)
         return (resp.headers, resp.content)
 
     def get_operation(self, method):
