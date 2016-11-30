@@ -44,7 +44,7 @@ class MimeGenerator(object):
         cid, path_or_content = attach
         self._file.write('Content-Id:<%s>\r\n' % cid) # header
         self._file.write('Content-Type: %s\r\n' % self._get_content_type(path_or_content)) # header
-        self._file.write('Content-Transfer-Encoding: bindary\r\n\r\n') # header
+        self._file.write('Content-Transfer-Encoding: binary\r\n\r\n') # header
         self._file.write(self._get_attachment_content(path_or_content)) # body
 
     def _get_content_type(self, path_or_content):

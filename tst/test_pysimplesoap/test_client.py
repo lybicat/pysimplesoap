@@ -57,7 +57,7 @@ Content-Type: text/xml
 --8cf32b7e-5a0c-11e6-9fa3-080027d14c2a
 Content-Id:<abcde>
 Content-Type: application/octet-stream
-Content-Transfer-Encoding: bindary
+Content-Transfer-Encoding: binary
 
 12345
 --8cf32b7e-5a0c-11e6-9fa3-080027d14c2a--'''))
