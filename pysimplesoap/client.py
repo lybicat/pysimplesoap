@@ -29,9 +29,21 @@ from .env import SOAP_NAMESPACES
 from .env import TIMEOUT
 from .api import decode
 from .wsdl import parse
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.poolmanager import PoolManager
 
 log = logging.getLogger(__name__)
 
+class MyAdapter(HTTPAdapter):
+    def init_poolmanager(self, connections, maxsize, block=False):
+        self._pool_connections = connections
+        self._pool_maxsize = maxsize
+        self._pool_block = block
+
+        self.poolmanager = PoolManager(num_pools=connections,
+                                       maxsize=maxsize,
+                                       block=block,
+                                       assert_hostname=False)
 
 class SoapClient(object):
     """Simple SOAP Client (simil PHP)"""
@@ -215,6 +227,9 @@ class SoapClient(object):
 
             # httplib in python3 do the same inside itself, don't need to convert it here
             headers = dict((str(k), str(v)) for k, v in headers.iteritems())
+
+        if self.http.verify:
+            self.http.mount('https://', MyAdapter())
 
         resp = self.http.post(self.location, data=xml, headers=headers)
 
