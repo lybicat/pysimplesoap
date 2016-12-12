@@ -28,8 +28,8 @@ class _SoapMsgParser(object):
         content_type = headers and headers.get('content-type', '') or ''
         raw_xml, mimes = self._get_raw_xml(content_type, content)
         resp = self._parse_raw_xml(raw_xml, self.method or headers['soapaction'].strip('"').rsplit('/', 1)[1])
-        resp.update(self._parse_mimes(mimes))
-
+        if resp:
+            resp.update(self._parse_mimes(mimes))
         return resp
 
     def _get_raw_xml(self, content_type, text):

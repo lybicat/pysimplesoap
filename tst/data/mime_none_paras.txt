@@ -1,0 +1,7 @@
+--MIMEBoundary_d316ab66cfba1c973daac9ef6e5c50d6512a72e75cef98f3
+Content-Type: text/xml; charset=UTF-8
+Content-Transfer-Encoding: binary
+Content-ID: <0.c316ab66cfba1c973daac9ef6e5c50d6512a72e75cef98f3@apache.org>
+
+<?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><ns2:completeRegistrationResponse xmlns:ns2="http://www.nokiasiemens.com/ne3s/1.0" /></soapenv:Body></soapenv:Envelope>
+--MIMEBoundary_d316ab66cfba1c973daac9ef6e5c50d6512a72e75cef98f3--

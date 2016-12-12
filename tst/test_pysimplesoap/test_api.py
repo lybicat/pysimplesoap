@@ -35,3 +35,11 @@ class TestMsgDecoding(BaseTestcase):
         self.assertEqual(attachment['notification']['alarmNew']['alarmId'], '1')
         self.assertEqual(attachment['notification']['alarmNew']['alarmText'], 'Simple alarm text')
 
+    def test_decode_mime_with_xml_none_paras(self):
+        headers = {
+            'soapaction': 'http://www.nokiasiemens.com/ne3s/1.0/completeRegistration',
+            'content-type': 'multipart/related; boundary="MIMEBoundary_d316ab66cfba1c973daac9ef6e5c50d6512a72e75cef98f3"; type="text/xml"; start="<0.c316ab66cfba1c973daac9ef6e5c50d6512a72e75cef98f3@apache.org>"',
+            'server': 'Jetty(9.2.z-SNAPSHOT)'
+            }
+        resp = decode(headers, self.get_data('mime_none_paras'), wsdl)
+        self.assertEqual(None, resp)
