@@ -217,24 +217,19 @@ class SoapClient(object):
             headers['SOAPAction'] = soap_action
 
         headers.update(self.http_headers)
-        #log.info("POST %s" % self.location)
-        #log.debug('\n'.join(["%s: %s" % (k, v) for k, v in headers.iteritems()]))
-        #log.debug(xml)
 
         if sys.version < '3':
             # Ensure http_method, location and all headers are binary to prevent
             # UnicodeError inside httplib.HTTPConnection._send_output.
 
             # httplib in python3 do the same inside itself, don't need to convert it here
-            headers = dict((str(k), str(v)) for k, v in headers.iteritems())
+            headers = {str(k): str(v) for k, v in headers.iteritems()}
 
         if self.http.verify:
             self.http.mount('https://', MyAdapter())
 
         resp = self.http.post(self.location, data=xml, headers=headers)
 
-        #log.debug('\n'.join(["%s: %s" % (k, v) for k, v in resp.headers.iteritems()]))
-        #log.debug(resp.content)
         return (resp.headers, resp.content)
 
     def get_operation(self, method):

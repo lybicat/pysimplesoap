@@ -40,8 +40,8 @@ class SimpleXMLElement(object):
           {prefix: received_prefix}
         """
         self.__namespaces_map = namespaces_map
-        _rx = "|".join(namespaces_map.keys())  # {'external': 'ext', 'model': 'mod'} -> 'external|model'
-        self.__ns_rx = re.compile(r"^(%s):.*$" % _rx)  # And now we build an expression ^(external|model):.*$
+        _rx = '|'.join(namespaces_map)  # {'external': 'ext', 'model': 'mod'} -> 'external|model'
+        self.__ns_rx = re.compile(r'^(%s):.*$' % _rx)  # And now we build an expression ^(external|model):.*$
                                                        # to find prefixes in all xml nodes i.e.: <model:code>1</model:code>
                                                        # and later change that to <mod:code>1</mod:code>
         self.__ns = namespace
@@ -50,11 +50,7 @@ class SimpleXMLElement(object):
 
         if text is not None:
             content_type = headers and headers.get('content-type', '') or ''
-            try:
-                self.__document = minidom.parseString(self._get_raw_xml(content_type, text))
-            except:
-                #log.error(text)
-                raise
+            self.__document = minidom.parseString(self._get_raw_xml(content_type, text))
             self.__elements = [self.__document.documentElement]
         else:
             self.__elements = elements
@@ -85,10 +81,8 @@ class SimpleXMLElement(object):
     def add_child(self, name, text=None, ns=True):
         """Adding a child tag to a node"""
         if not ns or self.__ns is False:
-            ##log.debug('adding %s without namespace', name)
             element = self.__document.createElement(name)
         else:
-            ##log.debug('adding %s ns "%s" %s', name, self.__ns, ns)
             if isinstance(ns, basestring):
                 element = self.__document.createElement(name)
                 if ns:
@@ -116,15 +110,13 @@ class SimpleXMLElement(object):
     def __setattr__(self, tag, text):
         """Add text child tag node (short form)"""
         if tag.startswith("_"):
-            object.__setattr__(self, tag, text)
+            super(SimpleXMLElement, self).__setattr__(tag, text)
         else:
-            ##log.debug('__setattr__(%s, %s)', tag, text)
             self.add_child(tag, text)
 
     def __delattr__(self, tag):
         """Remove a child tag (non recursive!)"""
-        elements = [__element for __element in self._element.childNodes
-                    if __element.nodeType == __element.ELEMENT_NODE]
+        elements = [e for e in self._element.childNodes if e.nodeType==e.ELEMENT_NODE]
         for element in elements:
             self._element.removeChild(element)
 
@@ -240,22 +232,17 @@ class SimpleXMLElement(object):
                 elements = [self.__elements[tag]]
             if ns and not elements:
                 for ns_uri in isinstance(ns, (tuple, list)) and ns or (ns, ):
-                    ##log.debug('searching %s by ns=%s', tag, ns_uri)
                     elements = self._element.getElementsByTagNameNS(ns_uri, tag)
                     if elements:
                         break
             if self.__ns and not elements:
-                ##log.debug('searching %s by ns=%s', tag, self.__ns)
                 elements = self._element.getElementsByTagNameNS(self.__ns, tag)
             if not elements:
-                ##log.debug('searching %s', tag)
                 elements = self._element.getElementsByTagName(tag)
             if not elements:
-                ##log.debug(self._element.toxml())
                 if error:
                     raise AttributeError("No elements found")
-                else:
-                    return
+                return
             return SimpleXMLElement(
                 elements=elements,
                 document=self.__document,
@@ -272,31 +259,25 @@ class SimpleXMLElement(object):
 
     def __iter__(self):
         """Iterate over xml tags at this level"""
-        try:
-            for __element in self.__elements:
-                yield SimpleXMLElement(
-                    elements=[__element],
-                    document=self.__document,
-                    namespace=self.__ns,
-                    prefix=self.__prefix,
-                    jetty=self.__jetty,
-                    namespaces_map=self.__namespaces_map)
-        except:
-            raise
+        for __element in self.__elements:
+            yield SimpleXMLElement(
+                elements=[__element],
+                document=self.__document,
+                namespace=self.__ns,
+                prefix=self.__prefix,
+                jetty=self.__jetty,
+                namespaces_map=self.__namespaces_map)
 
     def __dir__(self):
         """List xml children tags names"""
-        return [node.tagName for node
-                in self._element.childNodes
-                if node.nodeType != node.TEXT_NODE]
+        return [node.tagName for node in self._element.childNodes if node.nodeType!=node.TEXT_NODE]
 
     def children(self):
         """Return xml children tags element"""
-        elements = [__element for __element in self._element.childNodes
-                    if __element.nodeType == __element.ELEMENT_NODE]
+        elements = [e for e in self._element.childNodes if e.nodeType==e.ELEMENT_NODE]
         if not elements:
             return None
-            #raise IndexError("Tag %s has no children" % self._element.tagName)
+
         return SimpleXMLElement(
             elements=elements,
             document=self.__document,
@@ -474,12 +455,9 @@ class SimpleXMLElement(object):
         """Replace the defined namespace alias with tohse used by the client."""
         pref = self.__ns_rx.search(name)
         if pref:
-            pref = pref.groups()[0]
-            try:
-                name = name.replace(pref, self.__namespaces_map[pref])
-            except KeyError:
-                #log.warning('Unknown namespace alias %s' % name)
-                pass
+            pref = pref.group(0)
+            if pref in self.__namespaces_map:
+                return name.replace(pref, self.__namespaces_map[pref])
         return name
 
     def marshall(self, name, value, add_child=True, add_comments=False,
@@ -541,9 +519,3 @@ class SimpleXMLElement(object):
         x = self.__document.importNode(other._element, True)  # deep copy
         self._element.appendChild(x)
 
-    def write_c14n(self, output=None, exclusive=True):
-        "Generate the canonical version of the XML node"
-        from . import c14n
-        xml = c14n.Canonicalize(self._element, output,
-                                unsuppressedPrefixes=[] if exclusive else None)
-        return xml
